@@ -4,9 +4,9 @@
 <div id="dashboard">
     <h2>Desempenho em tempo real</h2>
     <div>
-        <strong>CPU:</strong> <span id="cpu"></span>%<br>
-        <strong>Memória:</strong> <span id="mem"></span>%<br>
-        <strong>Disco:</strong> <span id="disk"></span>%
+        <strong>CPU:</strong> <span id="cpu"></span>% <span id="cpuabs"></span><br>
+        <strong>Memória:</strong> <span id="mem"></span>% <span id="memabs"></span><br>
+        <strong>Disco:</strong> <span id="disk"></span>% <span id="diskabs"></span>
     </div>
     <canvas id="cpuChart" width="400" height="100"></canvas>
     <canvas id="memChart" width="400" height="100"></canvas>
@@ -48,6 +48,10 @@ async function fetchAndUpdate() {
         document.getElementById('cpu').textContent = data.cpuHistory[data.cpuHistory.length-1]?.toFixed(1) || '0';
         document.getElementById('mem').textContent = data.memHistory[data.memHistory.length-1]?.toFixed(1) || '0';
         document.getElementById('disk').textContent = data.diskHistory[data.diskHistory.length-1]?.toFixed(1) || '0';
+        // Exibir valores absolutos
+        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${data.cpuFreq.toFixed(0)} MHz)` : '';
+        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${data.memUsedMB.toFixed(0)} MB / ${data.memTotalMB.toFixed(0)} MB)` : '';
+        document.getElementById('diskabs').textContent = (data.diskUsedGB && data.diskTotalGB) ? `(${data.diskUsedGB.toFixed(1)} GB / ${data.diskTotalGB.toFixed(1)} GB)` : '';
         cpuChart.data.datasets[0].data = data.cpuHistory;
         cpuChart.update();
         memChart.data.datasets[0].data = data.memHistory;

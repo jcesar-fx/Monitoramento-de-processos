@@ -24,6 +24,11 @@ type PerformanceData struct {
 	CPUHistory  []float64 `json:"cpuHistory"`
 	MemHistory  []float64 `json:"memHistory"`
 	DiskHistory []float64 `json:"diskHistory"`
+	CPUFreq     float64   `json:"cpuFreq"` // em MHz
+	MemUsedMB   float64   `json:"memUsedMB"`
+	MemTotalMB  float64   `json:"memTotalMB"`
+	DiskUsedGB  float64   `json:"diskUsedGB"`
+	DiskTotalGB float64   `json:"diskTotalGB"`
 }
 
 // performanceData é uma variável a nível de pacote, não exportada (letra minúscula),
@@ -46,15 +51,35 @@ func updateMetrics() {
 			memInfo = &mem.VirtualMemoryStat{UsedPercent: 0}
 		}
 
-		diskInfo, err := disk.Usage("/")
+		diskInfo, err := disk.Usage("C:\\")
 		if err != nil {
 			log.Printf("Erro ao obter Disco: %v", err)
 			diskInfo = &disk.UsageStat{UsedPercent: 0}
 		}
 
+		// Frequência da CPU (MHz)
+		cpuFreqs, err := cpu.Info()
+		var freq float64 = 0
+		if err == nil && len(cpuFreqs) > 0 {
+			freq = cpuFreqs[0].Mhz
+		}
+
+		// Memória usada e total (MB)
+		memUsedMB := float64(memInfo.Used) / 1024.0 / 1024.0
+		memTotalMB := float64(memInfo.Total) / 1024.0 / 1024.0
+
+		// Disco usado e total (GB)
+		diskUsedGB := float64(diskInfo.Used) / 1024.0 / 1024.0 / 1024.0
+		diskTotalGB := float64(diskInfo.Total) / 1024.0 / 1024.0 / 1024.0
+
 		performanceData.CPUHistory = append(performanceData.CPUHistory, cpuPerc[0])
 		performanceData.MemHistory = append(performanceData.MemHistory, memInfo.UsedPercent)
 		performanceData.DiskHistory = append(performanceData.DiskHistory, diskInfo.UsedPercent)
+		performanceData.CPUFreq = freq
+		performanceData.MemUsedMB = memUsedMB
+		performanceData.MemTotalMB = memTotalMB
+		performanceData.DiskUsedGB = diskUsedGB
+		performanceData.DiskTotalGB = diskTotalGB
 
 		if len(performanceData.CPUHistory) > historySize {
 			performanceData.CPUHistory = performanceData.CPUHistory[1:]
