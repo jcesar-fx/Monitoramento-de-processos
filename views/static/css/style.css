@@ -1,0 +1,243 @@
+.container-fluid {
+    padding: 0;
+}
+
+/* navbar */
+.navbar {
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.navbar-nav {
+    margin: auto;
+
+
+}
+.nav-item{
+    margin: 10px;}
+
+.nav-link{
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+.navbar-brand {
+    font-weight: bold;
+    position: relative;
+    left: 30px;
+
+}
+
+.navbar-light .navbar-nav a.nav-lin {
+    color: #333;
+    letter-spacing: 1px;
+}
+/*dashboard*/
+.dashboard{
+    padding:0 ;
+    width: 100%;
+    display: block;
+}
+
+.dashboard h4{
+    font-size: 20px;
+}
+.dashboard span{
+    font-size: 40px;
+    display: block;
+    width: 100%;
+}
+.dashboard-box{
+    float: left;
+    background-color: #dfdfdf;
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 130px;
+    width: 32%;
+    text-align: center;
+}
+.dashboard-box:nth-child(2){
+    margin-left: 1.5%;
+    margin-right: 1.5%;
+}
+.btn.btn-success{
+    margin: 10px;
+    padding: 10px;
+}
+#dashboard-lastdays{
+    background-color: #3476e2;
+}
+
+#dashboard-done{
+    background-color: #13c43f;
+}
+
+#dashboard-doing{
+    background-color: #db1e47;
+}
+
+/* botao adicionar */
+
+#add-link {
+    text-decoration: none;
+}
+
+.add-div    {
+    background-color: rgb(53, 62, 185);
+    cursor: pointer;
+    display: inline-block;
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    margin-right: 25px;
+
+}
+
+.fas.fa-plus {
+    color: white;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+/* search */
+
+.fas.fa-search{
+    position: absolute;
+    top: 12px;
+    right: 26px;
+    cursor: pointer;
+}
+.search-div{
+    position: relative;
+    padding: 0px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+/* filtros */
+.filter-div {
+    margin-bottom: 15px;
+    padding: 0px;
+}
+
+#filter {
+    display: inline-block;
+    width: 200px;
+    margin-left: 10px;
+}
+
+
+
+/* lista de tarefas */
+
+.list-div {
+    padding: 0px;
+}
+
+.task-list{
+    padding-left: 0px;
+}
+
+.task-title{
+    text-decoration: none;
+    color: #171717;
+    padding-left: 10px;
+}
+
+.task-item {
+    list-style: none;
+    font-size: 20px;
+    height: 50px;
+    padding-top: 10px;
+    border-bottom: 1px dashed #ccc;
+}
+.task-item.done{
+    list-style: none;
+    font-size: 20px;
+    height: 50px;
+    padding-top: 10px;
+    border-bottom: 1px dashed #ccc;
+    background-color: #ccc;
+}
+
+.fas.fa-trash, .fas.fa-edit, .fas.fa-check {
+    cursor: pointer;
+    margin: 5px;
+    font-size: 20px;
+    float: right;
+
+}
+
+.fas.fas.fa-trash{
+    color: red;
+
+}
+
+.fas.fa-edit{
+    color: green;
+}
+.fas.fa-check{
+    color: #ccc;
+}
+
+.done .fas.fa-check{
+    color: #3476e2;
+}
+/* rodapé */
+
+footer {
+    background-color: #333;
+    height: 300px;
+    border-top: 2x solid #202020;
+
+
+}
+
+footer p {
+    text-align: center;
+    font-size: 50px;   
+    color: whitesmoke;
+    top: 40%;
+    position: relative;
+}
+/* Paginação */
+.pagination {
+    margin-bottom: 20px;
+}
+
+.step-links {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.step-links .current {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+/* login */
+
+.auth-card {
+    margin-bottom: 30px;
+}
+
+.container-fluid .row {
+    margin: 0px;
+}
+.change-form-p {
+    margin-top: 30px ;
+    text-align: center;
+}
+.container-fluid .body {
+    padding: 20px;
+}
+
+/* messages */
+ul.messages {
+    padding: 0;
+}
+
+ul.messages li{
+    list-style: none;
+}

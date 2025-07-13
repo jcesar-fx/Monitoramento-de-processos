@@ -1,0 +1,10 @@
+{% include "header.django" %}
+<div>
+<h3 class="alert alert-primary" >Process List</h3>
+</div>
+
+    <ul class="list-group" id="process-list">
+    
+    </ul>
+
+<script src= "/static/js/fetchProcessData.js"></script>
