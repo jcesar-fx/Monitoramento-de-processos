@@ -1,2 +1,61 @@
 {% include "header.django" %}
 <h1>{{ Title }}</h1>
+
+<div id="dashboard">
+    <h2>Desempenho em tempo real</h2>
+    <div>
+        <strong>CPU:</strong> <span id="cpu"></span>%<br>
+        <strong>Memória:</strong> <span id="mem"></span>%<br>
+        <strong>Disco:</strong> <span id="disk"></span>%
+    </div>
+    <canvas id="cpuChart" width="400" height="100"></canvas>
+    <canvas id="memChart" width="400" height="100"></canvas>
+    <canvas id="diskChart" width="400" height="100"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let cpuChart, memChart, diskChart;
+function createChart(ctx, label, color) {
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 60 }, (_, i) => i + 1),
+            datasets: [{
+                label: label, data: [], borderColor: color, backgroundColor: color + '33',
+                borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0,
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true, max: 100 },
+                x: {}
+            },
+            plugins: { legend: { labels: { color: '#222' } } }
+        }
+    });
+}
+window.onload = function() {
+    cpuChart = createChart(document.getElementById('cpuChart').getContext('2d'), 'CPU (%)', '#00bcd4');
+    memChart = createChart(document.getElementById('memChart').getContext('2d'), 'Memória (%)', '#ff9800');
+    diskChart = createChart(document.getElementById('diskChart').getContext('2d'), 'Disco (%)', '#4caf50');
+    fetchAndUpdate();
+    setInterval(fetchAndUpdate, 2000);
+}
+async function fetchAndUpdate() {
+    try {
+        const resp = await fetch('/api/performance');
+        const data = await resp.json();
+        document.getElementById('cpu').textContent = data.cpuHistory[data.cpuHistory.length-1]?.toFixed(1) || '0';
+        document.getElementById('mem').textContent = data.memHistory[data.memHistory.length-1]?.toFixed(1) || '0';
+        document.getElementById('disk').textContent = data.diskHistory[data.diskHistory.length-1]?.toFixed(1) || '0';
+        cpuChart.data.datasets[0].data = data.cpuHistory;
+        cpuChart.update();
+        memChart.data.datasets[0].data = data.memHistory;
+        memChart.update();
+        diskChart.data.datasets[0].data = data.diskHistory;
+        diskChart.update();
+    } catch (e) {
+        console.error('Erro ao buscar desempenho:', e);
+    }
+}
+</script>

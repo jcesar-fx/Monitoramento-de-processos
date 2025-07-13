@@ -4,6 +4,8 @@ import (
 	"log"
 	"runtime"
 
+	"app_LP/desempenho"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/django/v3"
 
@@ -95,6 +97,9 @@ func main() {
 		Views: engine,
 	})
 
+	// Inicia o monitoramento de desempenho em background
+	desempenho.RegisterHandlersAndStartMonitoring()
+
 	app.Get("/desempenho", func(c *fiber.Ctx) error {
 
 		return c.Render("desempenho", fiber.Map{
@@ -109,6 +114,12 @@ func main() {
 		})
 	})
 	app.Static("/static", "./views/static")
+
+	// API de desempenho integrada ao Fiber
+	app.Get("/api/performance", func(c *fiber.Ctx) error {
+		data := desempenho.GetPerformanceData()
+		return c.JSON(data)
+	})
 
 	app.Get("/api/processes", func(c *fiber.Ctx) error {
 
