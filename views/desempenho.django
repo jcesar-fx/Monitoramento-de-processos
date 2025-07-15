@@ -51,8 +51,8 @@ async function fetchAndUpdate() {
         let diskPercent = data.diskHistory[data.diskHistory.length-1];
         document.getElementById('disk').textContent = (diskPercent !== undefined && diskPercent !== null) ? diskPercent.toFixed(4) : '0';
         // Exibir valores absolutos
-        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${data.cpuFreq.toFixed(0)} MHz)` : '';
-        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${data.memUsedMB.toFixed(0)} MB / ${data.memTotalMB.toFixed(0)} MB)` : '';
+        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${(data.cpuFreq/1000).toFixed(2)} GHz)` : '';
+        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${(data.memUsedMB/1024).toFixed(2)} GB / ${(data.memTotalMB/1024).toFixed(2)} GB)` : '';
         document.getElementById('diskabs').textContent = (data.diskUsedGB && data.diskTotalGB) ? `(${data.diskUsedGB.toFixed(1)} GB / ${data.diskTotalGB.toFixed(1)} GB)` : '';
         document.getElementById('diskvel').textContent = (data.diskReadKBs || data.diskWriteKBs) ? `[Leitura: ${data.diskReadKBs?.toFixed(1) || 0} KB/s | Gravação: ${data.diskWriteKBs?.toFixed(1) || 0} KB/s]` : '';
         cpuChart.data.datasets[0].data = data.cpuHistory;

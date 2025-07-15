@@ -12,12 +12,11 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
-// GetPerformanceData retorna os dados atuais de desempenho para uso externo (ex: Fiber)
+// GetPerformanceData retorna os dados atuais de desempenho para uso extern
 func GetPerformanceData() PerformanceData {
 	return performanceData
 }
 
-// Constante e struct permanecem as mesmas, mas agora pertencem a este pacote.
 const historySize = 60
 
 type PerformanceData struct {
@@ -121,13 +120,13 @@ func updateMetrics() {
 	}
 }
 
-// HandleAPI serve os dados em JSON. Exportada para uso externo.
+// HandleAPI sai como JSON. Exportada para uso externo.
 func HandleAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(performanceData)
 }
 
-// handleRoot serve a página HTML. Não precisa ser exportada.
+// handleRoot é para a página HTML. Não precisa ser exportada.
 func handleRoot(w http.ResponseWriter, r *http.Request) {
 	htmlContent := `
 <!DOCTYPE html>
