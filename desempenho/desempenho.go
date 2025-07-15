@@ -2,7 +2,6 @@ package desempenho
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -12,12 +11,11 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
-// GetPerformanceData retorna os dados atuais de desempenho para uso externo (ex: Fiber)
+// GetPerformanceData retorna os dados atuais de desempenho para uso extern
 func GetPerformanceData() PerformanceData {
 	return performanceData
 }
 
-// Constante e struct permanecem as mesmas, mas agora pertencem a este pacote.
 const historySize = 60
 
 type PerformanceData struct {
@@ -121,77 +119,13 @@ func updateMetrics() {
 	}
 }
 
-// HandleAPI serve os dados em JSON. Exportada para uso externo.
+// HandleAPI sai como JSON. Exportada para uso externo.
 func HandleAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(performanceData)
 }
 
-// handleRoot serve a página HTML. Não precisa ser exportada.
-func handleRoot(w http.ResponseWriter, r *http.Request) {
-	htmlContent := `
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Dashboard de Desempenho (Go)</title>
-	<style>
-		body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
-		h1 { text-align: center; color: #00bcd4; }
-		.dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px; }
-		.chart-container { background-color: #1e1e1e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-	</style>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-	<h1>Dashboard de Desempenho em Tempo Real</h1>
-	<div class="dashboard">
-		<div class="chart-container"><canvas id="cpuChart"></canvas></div>
-		<div class="chart-container"><canvas id="memChart"></canvas></div>
-		<div class="chart-container"><canvas id="diskChart"></canvas></div>
-	</div>
-	<script>
-		function createChart(ctx, label, color) {
-			return new Chart(ctx, {
-				type: 'line',
-				data: {
-					labels: Array.from({ length: 60 }, (_, i) => i + 1),
-					datasets: [{
-						label: label, data: [], borderColor: color, backgroundColor: color + '33',
-						borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0,
-					}]
-				},
-				options: {
-					scales: {
-						y: { beginAtZero: true, max: 100, ticks: { color: '#e0e0e0' } },
-						x: { ticks: { color: '#e0e0e0' } }
-					},
-					plugins: { legend: { labels: { color: '#e0e0e0' } } }
-				}
-			});
-		}
-		const cpuChart = createChart(document.getElementById('cpuChart').getContext('2d'), 'Uso de CPU (%)', '#00bcd4');
-		const memChart = createChart(document.getElementById('memChart').getContext('2d'), 'Uso de Memória (%)', '#ff9800');
-		const diskChart = createChart(document.getElementById('diskChart').getContext('2d'), 'Uso de Disco (%)', '#4caf50');
-		async function fetchDataAndUpdateCharts() {
-			try {
-				const response = await fetch('/api/performance');
-				const data = await response.json();
-				cpuChart.data.datasets[0].data = data.cpuHistory;
-				cpuChart.update();
-				memChart.data.datasets[0].data = data.memHistory;
-				memChart.update();
-				diskChart.data.datasets[0].data = data.diskHistory;
-				diskChart.update();
-			} catch (error) { console.error('Erro ao buscar dados:', error); }
-		}
-		setInterval(fetchDataAndUpdateCharts, 2000);
-	</script>
-</body>
-</html>`
-	fmt.Fprint(w, htmlContent)
-}
+// handleRoot é para a página HTML. Não precisa ser exportada.
 
 // RegisterHandlersAndStartMonitoring é a ÚNICA função que precisa ser exportada (letra maiúscula).
 // Ela configura tudo que este pacote precisa para funcionar.
@@ -204,6 +138,5 @@ func RegisterHandlersAndStartMonitoring() {
 	go updateMetrics()
 
 	// Configura os handlers para as URLs.
-	http.HandleFunc("/", handleRoot)
 	http.HandleFunc("/api/performance", HandleAPI)
 }

@@ -12,20 +12,30 @@
     <canvas id="memChart" width="400" height="100"></canvas>
     <canvas id="diskChart" width="400" height="100"></canvas>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js" animationEnabled: false></script>
 <script>
 let cpuChart, memChart, diskChart;
 function createChart(ctx, label, color) {
     return new Chart(ctx, {
         type: 'line',
         data: {
+            
             labels: Array.from({ length: 60 }, (_, i) => i + 1),
             datasets: [{
                 label: label, data: [], borderColor: color, backgroundColor: color + '33',
-                borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0,
+                borderWidth: 2, fill: true, tension: 0.0, pointRadius: 0,
             }]
         },
         options: {
+            animations: {
+                tension: {
+                    duration: 1,
+                    easing: 'linear',
+                    from: 0,
+                    to: 0,
+                    loop: false
+                }
+            },
             scales: {
                 y: { beginAtZero: true, max: 100 },
                 x: {}
@@ -39,7 +49,7 @@ window.onload = function() {
     memChart = createChart(document.getElementById('memChart').getContext('2d'), 'Memória (%)', '#ff9800');
     diskChart = createChart(document.getElementById('diskChart').getContext('2d'), 'Disco (%)', '#4caf50');
     fetchAndUpdate();
-    setInterval(fetchAndUpdate, 2000);
+    setInterval(fetchAndUpdate, 10);
 }
 async function fetchAndUpdate() {
     try {
@@ -51,8 +61,8 @@ async function fetchAndUpdate() {
         let diskPercent = data.diskHistory[data.diskHistory.length-1];
         document.getElementById('disk').textContent = (diskPercent !== undefined && diskPercent !== null) ? diskPercent.toFixed(4) : '0';
         // Exibir valores absolutos
-        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${data.cpuFreq.toFixed(0)} MHz)` : '';
-        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${data.memUsedMB.toFixed(0)} MB / ${data.memTotalMB.toFixed(0)} MB)` : '';
+        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${(data.cpuFreq/1000).toFixed(2)} GHz)` : '';
+        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${(data.memUsedMB/1024).toFixed(2)} GB / ${(data.memTotalMB/1024).toFixed(2)} GB)` : '';
         document.getElementById('diskabs').textContent = (data.diskUsedGB && data.diskTotalGB) ? `(${data.diskUsedGB.toFixed(1)} GB / ${data.diskTotalGB.toFixed(1)} GB)` : '';
         document.getElementById('diskvel').textContent = (data.diskReadKBs || data.diskWriteKBs) ? `[Leitura: ${data.diskReadKBs?.toFixed(1) || 0} KB/s | Gravação: ${data.diskWriteKBs?.toFixed(1) || 0} KB/s]` : '';
         cpuChart.data.datasets[0].data = data.cpuHistory;
