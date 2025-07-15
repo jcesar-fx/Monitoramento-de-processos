@@ -6,7 +6,7 @@
     <div>
         <strong>CPU:</strong> <span id="cpu"></span>% <span id="cpuabs"></span><br>
         <strong>Memória:</strong> <span id="mem"></span>% <span id="memabs"></span><br>
-        <strong>Disco:</strong> <span id="disk"></span>% <span id="diskabs"></span> <span id="diskvel"></span>
+        <strong>Disco:</strong> <span id="diskabs"></span> <span id="diskvel"></span>
     </div>
     <canvas id="cpuChart" width="400" height="100"></canvas>
     <canvas id="memChart" width="400" height="100"></canvas>
@@ -39,7 +39,7 @@ window.onload = function() {
     memChart = createChart(document.getElementById('memChart').getContext('2d'), 'Memória (%)', '#ff9800');
     diskChart = createChart(document.getElementById('diskChart').getContext('2d'), 'Disco (%)', '#4caf50');
     fetchAndUpdate();
-    setInterval(fetchAndUpdate, 2000);
+    setInterval(fetchAndUpdate, 1000);
 }
 async function fetchAndUpdate() {
     try {
@@ -47,9 +47,7 @@ async function fetchAndUpdate() {
         const data = await resp.json();
         document.getElementById('cpu').textContent = data.cpuHistory[data.cpuHistory.length-1]?.toFixed(1) || '0';
         document.getElementById('mem').textContent = data.memHistory[data.memHistory.length-1]?.toFixed(1) || '0';
-        // Exibir percentual do disco com 3 casas decimais
-        let diskPercent = data.diskHistory[data.diskHistory.length-1];
-        document.getElementById('disk').textContent = (diskPercent !== undefined && diskPercent !== null) ? diskPercent.toFixed(4) : '0';
+        // Não exibe mais o percentual do disco, apenas armazenamento e velocidades
         // Exibir valores absolutos
         document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${(data.cpuFreq/1000).toFixed(2)} GHz)` : '';
         document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${(data.memUsedMB/1024).toFixed(2)} GB / ${(data.memTotalMB/1024).toFixed(2)} GB)` : '';
