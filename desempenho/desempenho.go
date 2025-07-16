@@ -12,6 +12,7 @@ import (
 )
 
 // GetPerformanceData retorna os dados atuais de desempenho para uso extern
+// GetPerformanceData retorna os dados atuais de desempenho para uso extern
 func GetPerformanceData() PerformanceData {
 	return performanceData
 }
@@ -119,6 +120,7 @@ func updateMetrics() {
 	}
 }
 
+// HandleAPI sai como JSON. Exportada para uso externo.
 // HandleAPI sai como JSON. Exportada para uso externo.
 func HandleAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
