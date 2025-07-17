@@ -1,6 +1,19 @@
 {% include "header.django" %}
 <div>
-<h3 class="alert alert-primary" >Process List</h3>
+<h3>Lista de Processos</h3>
+<div class="dropdown">
+    <button class="btn btn-purple dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      Ordenar por: Nome
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+      <li><a class="dropdown-item" href="#" data-sort="name">Nome</a></li>
+      <li><a class="dropdown-item" href="#" data-sort="cpu">Uso de CPU</a></li>
+      <li><a class="dropdown-item" href="#" data-sort="mem">Uso de Memoria</a></li>
+      <li><a class="dropdown-item" href="#" data-sort="pid">Numero de Grupo de Processos</a></li>
+    </ul>
+  </div>
+  <button class="btn btn-purple" id="sort-toggle">Crescente ↑</button>
+</div>
 </div>
 
     <ul class="list-group" id="process-list">
