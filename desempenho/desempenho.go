@@ -1,10 +1,10 @@
 package desempenho
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-	"time"
+	"encoding/json" // "encoding/json" // Importa o pacote de JSON para codificação e decodificação
+	"log"           // Ajuda a registrar as mensagens de Log para debugar
+	"net/http"      // Pacote HTTP
+	"time"          // Controla o tempo de execução
 
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -12,13 +12,13 @@ import (
 )
 
 // GetPerformanceData retorna os dados atuais de desempenho para uso extern
-// GetPerformanceData retorna os dados atuais de desempenho para uso extern
 func GetPerformanceData() PerformanceData {
 	return performanceData
 }
 
 const historySize = 60
 
+// PerformanceData contém os dados de desempenho do sistema.
 type PerformanceData struct {
 	CPUHistory   []float64 `json:"cpuHistory"`
 	MemHistory   []float64 `json:"memHistory"`
@@ -32,7 +32,7 @@ type PerformanceData struct {
 	DiskWriteKBs float64   `json:"diskWriteKBs"`
 }
 
-// performanceData é uma variável a nível de pacote, não exportada (letra minúscula),
+// performanceData é uma variável a nível de pacote
 // o que significa que só pode ser acessada por funções dentro deste pacote.
 var performanceData PerformanceData
 
@@ -107,29 +107,26 @@ func updateMetrics() {
 		performanceData.DiskTotalGB = diskTotalGB
 		performanceData.DiskReadKBs = readKBs
 		performanceData.DiskWriteKBs = writeKBs
-
+                // Cria uma lista para guardar os 60 "tiques" do histórico de métricas
 		if len(performanceData.CPUHistory) > historySize {
 			performanceData.CPUHistory = performanceData.CPUHistory[1:]
 			performanceData.MemHistory = performanceData.MemHistory[1:]
 			performanceData.DiskHistory = performanceData.DiskHistory[1:]
 		}
-		time.Sleep(100)
+		time.Sleep(1 * time.Second) // Atualiza a cada segundo
 	}
 }
 
-// HandleAPI sai como JSON. Exportada para uso externo.
 // HandleAPI sai como JSON. Exportada para uso externo.
 func HandleAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(performanceData)
 }
 
-// handleRoot é para a página HTML. Não precisa ser exportada.
-
-// RegisterHandlersAndStartMonitoring é a ÚNICA função que precisa ser exportada (letra maiúscula).
+// RegisterHandlersAndStartMonitoring é a ÚNICA função que precisa ser exportada
 // Ela configura tudo que este pacote precisa para funcionar.
 func RegisterHandlersAndStartMonitoring() {
-	// Inicializa os slices de histórico.
+
 	performanceData.CPUHistory = make([]float64, historySize)
 	performanceData.MemHistory = make([]float64, historySize)
 
