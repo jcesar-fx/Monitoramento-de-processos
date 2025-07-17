@@ -1,2 +1,0 @@
-{% include "header.django" %}
-<h1>{{ Title }}</h1>

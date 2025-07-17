@@ -31,7 +31,6 @@ func sameNamePIDs() [][]int {
 
 			nomesVistos = append(nomesVistos, nome)
 			if nome > "" {
-				//log.Printf("Current process name: %s \n", nome)
 
 				equalProcess := []int{int(listaDeProcessos[i].Pid)}
 				for j := 0; j < len(listaDeProcessos); j++ {
