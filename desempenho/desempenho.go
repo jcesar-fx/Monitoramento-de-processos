@@ -38,10 +38,11 @@ var performanceData PerformanceData
 
 // updateMetrics coleta os dados e atualiza o histórico.
 // Não precisa ser exportada pois só é chamada internamente por StartMonitoring.
+var lastReadBytes uint64 = 0
+var lastWriteBytes uint64 = 0
+var lastTime = time.Now()
+
 func updateMetrics() {
-	var lastReadBytes uint64 = 0
-	var lastWriteBytes uint64 = 0
-	var lastTime = time.Now()
 	for {
 		cpuPerc, err := cpu.Percent(time.Second, false)
 		if err != nil {
@@ -81,17 +82,12 @@ func updateMetrics() {
 		var readKBs, writeKBs float64
 		now := time.Now()
 		elapsed := now.Sub(lastTime).Seconds()
-		if err == nil {
-			for _, stat := range ioStats {
-				if stat.Name == "C:" || stat.Name == "PhysicalDrive0" {
-					if lastReadBytes > 0 && lastWriteBytes > 0 && elapsed > 0 {
-						readKBs = float64(stat.ReadBytes-lastReadBytes) / 1024.0 / elapsed
-						writeKBs = float64(stat.WriteBytes-lastWriteBytes) / 1024.0 / elapsed
-					}
-					lastReadBytes = stat.ReadBytes
-					lastWriteBytes = stat.WriteBytes
-					break
-				}
+		if err == nil && elapsed > 0 {
+			if stat, ok := ioStats["C:"]; ok {
+				readKBs = float64(stat.ReadBytes-lastReadBytes) / 1024.0 / elapsed
+				writeKBs = float64(stat.WriteBytes-lastWriteBytes) / 1024.0 / elapsed
+				lastReadBytes = stat.ReadBytes
+				lastWriteBytes = stat.WriteBytes
 			}
 		}
 		lastTime = now
@@ -117,6 +113,7 @@ func updateMetrics() {
 			performanceData.MemHistory = performanceData.MemHistory[1:]
 			performanceData.DiskHistory = performanceData.DiskHistory[1:]
 		}
+		time.Sleep(100)
 	}
 }
 

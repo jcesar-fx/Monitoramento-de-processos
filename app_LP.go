@@ -101,9 +101,9 @@ func main() {
 	desempenho.RegisterHandlersAndStartMonitoring()
 
 	app.Get("/desempenho", func(c *fiber.Ctx) error {
-
+		metric := c.Query("metric", "cpub") // default to CPU if none given
 		return c.Render("desempenho", fiber.Map{
-			"Title": "Parte de Desempenho",
+			"selected_metric": metric,
 		})
 	})
 
@@ -131,5 +131,11 @@ func main() {
 		return c.Render("processos", fiber.Map{})
 	})
 
+	app.Get("/dashboard", func(c *fiber.Ctx) error {
+		metric := c.Query("metric", "cpu") // Default to CPU if not specified
+		return c.Render("dashboard", fiber.Map{
+			"selected_metric": metric,
+		})
+	})
 	log.Fatal(app.Listen(":3000"))
 }

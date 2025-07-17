@@ -1,76 +1,49 @@
 {% include "header.django" %}
-<h1>{{ Title }}</h1>
 
-<div id="dashboard">
-    <h2>Desempenho em tempo real</h2>
-    <div>
-        <strong>CPU:</strong> <span id="cpu"></span>% <span id="cpuabs"></span><br>
-        <strong>Memória:</strong> <span id="mem"></span>% <span id="memabs"></span><br>
-        <strong>Disco:</strong> <span id="diskabs"></span> <span id="diskvel"></span>
-    </div>
-    <canvas id="cpuChart" width="400" height="100"></canvas>
-    <canvas id="memChart" width="400" height="100"></canvas>
-    <canvas id="diskChart" width="400" height="100"></canvas>
+<div class="container-fluid">
+  <div class="row vh-100">
+    <aside class="col-md-2 bg-light text-dark p-4 border-end d-flex flex-column">
+      <h4 class="mb-4 fw-semibold">Monitor</h4>
+      <div class="list-group flex-grow-1">
+        <a href="?metric=cpub" class="list-group-item list-group-item-action {% if selected_metric == 'cpub' %}active{% endif %}">
+          CPU: <span id="cpusidebar">--</span>%
+        </a>
+        <a href="?metric=memb" class="list-group-item list-group-item-action {% if selected_metric == 'memb' %}active{% endif %}">
+          Memória: <span id="memsidebar">--</span>%
+        </a>
+        <a class="list-group-item list-group-item-action {% if selected_metric == 'diskb' %}active{% endif %}">
+          Disco: <span id="diskabs">--</span>%
+        </a>
+      </div>
+    </aside>
+
+    <main class="col-md-10 p-4" id="dashboard">
+      <section class="mb-5" style="{% if selected_metric != 'cpub' %}display: none;{% endif %}">
+        <h5 class="mb-2">CPU</h5>
+        <p>
+          Uso: <strong><span id="cpu">--</span>%</strong> <small id="cpuabs"></small>
+        </p>
+        <canvas id="cpuChart" width="400" height="200"></canvas>
+      </section>
+
+      <section class="mb-5" style="{% if selected_metric != 'memb' %}display: none;{% endif %}">
+        <h5 class="mb-2">Memória</h5>
+        <p>
+          Uso: <strong><span id="mem">--</span>%</strong> <small id="memabs"></small>
+        </p>
+        <canvas id="memChart" width="400" height="200"></canvas>
+      </section>
+
+      <section style="{% if selected_metric != 'diskb' %}display: none;{% endif %}">
+        <h5 class="mb-2">Disco</h5>
+        <p>
+          Uso: <strong><span id="diskabs">--</span>%</strong> <small id="diskvel"></small>
+        </p>
+        <canvas id="diskChart" width="400" height="200"></canvas>
+      </section>
+    </main>
+  </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js" animationEnabled: false></script>
-<script>
-let cpuChart, memChart, diskChart;
-function createChart(ctx, label, color) {
-    return new Chart(ctx, {
-        type: 'line',
-        data: {
-            
-            labels: Array.from({ length: 60 }, (_, i) => i + 1),
-            datasets: [{
-                label: label, data: [], borderColor: color, backgroundColor: color + '33',
-                borderWidth: 2, fill: true, tension: 0.0, pointRadius: 0,
-            }]
-        },
-        options: {
-            animations: {
-                tension: {
-                    duration: 1,
-                    easing: 'linear',
-                    from: 0,
-                    to: 0,
-                    loop: false
-                }
-            },
-            scales: {
-                y: { beginAtZero: true, max: 100 },
-                x: {}
-            },
-            plugins: { legend: { labels: { color: '#222' } } }
-        }
-    });
-}
-window.onload = function() {
-    cpuChart = createChart(document.getElementById('cpuChart').getContext('2d'), 'CPU (%)', '#00bcd4');
-    memChart = createChart(document.getElementById('memChart').getContext('2d'), 'Memória (%)', '#ff9800');
-    diskChart = createChart(document.getElementById('diskChart').getContext('2d'), 'Disco (%)', '#4caf50');
-    fetchAndUpdate();
-    setInterval(fetchAndUpdate, 1000);
-}
-async function fetchAndUpdate() {
-    try {
-        const resp = await fetch('/api/performance');
-        const data = await resp.json();
-        document.getElementById('cpu').textContent = data.cpuHistory[data.cpuHistory.length-1]?.toFixed(1) || '0';
-        document.getElementById('mem').textContent = data.memHistory[data.memHistory.length-1]?.toFixed(1) || '0';
-        // Não exibe mais o percentual do disco, apenas armazenamento e velocidades
-        // Exibir valores absolutos
-        document.getElementById('cpuabs').textContent = data.cpuFreq ? `(${(data.cpuFreq/1000).toFixed(2)} GHz)` : '';
-        document.getElementById('memabs').textContent = (data.memUsedMB && data.memTotalMB) ? `(${(data.memUsedMB/1024).toFixed(2)} GB / ${(data.memTotalMB/1024).toFixed(2)} GB)` : '';
-        document.getElementById('diskabs').textContent = (data.diskUsedGB && data.diskTotalGB) ? `(${data.diskUsedGB.toFixed(1)} GB / ${data.diskTotalGB.toFixed(1)} GB)` : '';
-        document.getElementById('diskvel').textContent = (data.diskReadKBs || data.diskWriteKBs) ? `[Leitura: ${data.diskReadKBs?.toFixed(1) || 0} KB/s | Gravação: ${data.diskWriteKBs?.toFixed(1) || 0} KB/s]` : '';
-        cpuChart.data.datasets[0].data = data.cpuHistory;
-        cpuChart.update();
-        memChart.data.datasets[0].data = data.memHistory;
-        memChart.update();
-        diskChart.data.datasets[0].data = data.diskHistory;
-        diskChart.update();
-    } catch (e) {
-        console.error('Erro ao buscar desempenho:', e);
-    }
-}
-</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/js/fetchDesempenhoData.js"></script>
